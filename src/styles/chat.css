@@ -1,0 +1,155 @@
+/* src/styles/chat.css */
+
+.chat-container {
+  max-width: 700px;
+  margin: 2rem auto;
+  padding: 1rem;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.chat-container {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.chat-container.dark {
+  background-color: #1e1e1e;
+  color: #f0f0f0;
+}
+
+.chat-container h1 {
+  color: #333;
+  transition: color 0.3s ease;
+}
+
+.chat-container.dark h1 {
+  color: #f0f0f0;
+}
+
+
+.chat-container.dark .text {
+  background-color: #333;
+  color: #f0f0f0;
+  
+}
+
+.chat-container.dark input {
+  background-color: #2a2a2a;
+  color: white;
+  border: 1px solid #555;
+}
+
+.chat-container.dark button {
+  background-color: #444;
+  color: white;
+}
+
+.chat-container.dark button:hover {
+  background-color: #666;
+}
+
+
+.messages {
+  max-height: 400px;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+  padding-right: 0.5rem;
+}
+
+.message {
+  margin: 0.5rem 0;
+  padding: 0.75rem;
+  border-radius: 8px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+}
+
+.message.user {
+  background-color: #d0f0ff;
+  text-align: right;
+}
+
+.message.assistant {
+  background-color: #f0f0f0;
+  text-align: left;
+}
+
+.thinking {
+  font-style: italic;
+  color: #888;
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+.controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+input {
+  flex: 1;
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 0.6rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+button:has(svg.fa-volume-up) {
+  background-color: #28a745;
+}
+
+.chat-container.dark button:has(svg.fa-volume-up) {
+  background-color: #3c8c3c;
+}
+
+
+h1 {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 2rem;
+  color: #333;
+}
+
+.upload-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #007bff;
+  color: white;
+  padding: 0.6rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.upload-btn:hover {
+  background-color: #0056b3;
+}
+
+.upload-btn input {
+  display: none;
+}
+
