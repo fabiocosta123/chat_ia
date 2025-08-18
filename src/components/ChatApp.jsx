@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   FaPaperPlane,
   FaCopy,
@@ -189,7 +189,7 @@ const ChatApp = () => {
     <div className={`chat-container ${darkMode ? "dark" : ""}`}>
       <ToastContainer />
       <div className="header">
-        <h1>🧠 Copilot Clone com Gemini</h1>
+        <h1>🧠 Dr. Botica responde</h1>
         <button onClick={toggleTheme}>
           {darkMode ? <FaSun /> : <FaMoon />}
         </button>
