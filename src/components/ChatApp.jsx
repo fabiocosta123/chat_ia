@@ -13,6 +13,7 @@ import {
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../styles/chat.css";
+import MagoLogo from '../assets/img/magoSemFundo.png'
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
@@ -189,7 +190,10 @@ const ChatApp = () => {
     <div className={`chat-container ${darkMode ? "dark" : ""}`}>
       <ToastContainer />
       <div className="header">
-        <h1>Dr. Botica responde</h1>
+        <div className="logo-title">
+          <img src={MagoLogo} alt="Logo Mago" className="logo-img"/>
+          <h1>Dr. Botica responde</h1>
+        </div>
         <button onClick={toggleTheme}>
           {darkMode ? <FaSun /> : <FaMoon />}
         </button>
