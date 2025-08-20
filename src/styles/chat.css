@@ -153,8 +153,7 @@ input {
 }
 
 /* Botões */
-button,
-.upload-btn {
+button {
   background-color: var(--primary);
   color: white;
   border: none;
@@ -167,6 +166,22 @@ button,
   justify-content: center;
   min-width: 40px;
 }
+
+.upload-btn {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  padding: 0.6rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 15px;
+}
+
 
 button:hover,
 .upload-btn:hover {
@@ -203,12 +218,20 @@ button:has(svg.fa-volume-up) {
   }
 
   input {
+    width: 93%;
+  }
+
+  button {
     width: 100%;
   }
 
-  button,
+  .btn-dark{
+    width: 10%;
+    margin-left: auto;    
+  }
+
   .upload-btn {
-    width: 100%;
+    width: 94%;
   }
 
   .messages {
