@@ -186,6 +186,14 @@ const ChatApp = () => {
     localStorage.setItem("chatHistory", JSON.stringify(messages));
   }, [messages]);
 
+  // scrool automatico
+  const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+
   return (
     <div className={`chat-container ${darkMode ? "dark" : ""}`}>
       <ToastContainer />
@@ -207,6 +215,7 @@ const ChatApp = () => {
           </div>
         ))}
         {loading && <div className="thinking">🤔 Pensando...</div>}
+        <div ref={messagesEndRef} />
       </div>
 
       <div className="controls">
