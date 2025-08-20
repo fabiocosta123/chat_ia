@@ -11,10 +11,14 @@ import {
   FaVolumeUp,
   FaPause,
 } from "react-icons/fa";
+
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
 import "../styles/chat.css";
 import MagoLogo from "../assets/img/magoSemFundo.png";
+
+import jsPDF from "jspdf";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
@@ -67,7 +71,8 @@ const ChatApp = () => {
 
   const startListening = () => {
     if (listening) return toast.info("Já estou escutando...");
-    recognitionRef.current?.start() ?? toast.error("Reconhecimento não suportado.");
+    recognitionRef.current?.start() ??
+      toast.error("Reconhecimento não suportado.");
     setListening(true);
   };
 
@@ -148,21 +153,33 @@ const ChatApp = () => {
     toast.info("Campo de texto limpo!");
   };
 
-  const exportHistory = () => {
-    if (messages.length === 0) return toast.info("Nenhuma mensagem para exportar.");
+  const exportHistoryAsPDF = () => {
+    if (messages.length === 0) {
+      toast.info("Nenhuma mensagem para exportar.");
+      return;
+    }
 
-    const content = messages
-      .map((msg) => `${msg.role === "user" ? "Você" : "Copilot"}: ${msg.content}`)
-      .join("\n\n");
+    const doc = new jsPDF();
+    let y = 10;
 
-    const blob = new Blob([content], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "historico_chat.txt";
-    link.click();
-    URL.revokeObjectURL(url);
-    toast.success("Histórico exportado!");
+    messages.forEach((msg, index) => {
+      const prefix = msg.role === "user" ? "Você: " : "Copilot: ";
+      const lines = doc.splitTextToSize(prefix + msg.content, 180);
+
+      lines.forEach((line) => {
+        if (y > 280) {
+          doc.addPage();
+          y = 10;
+        }
+        doc.text(line, 10, y);
+        y += 7;
+      });
+
+      y += 5;
+    });
+
+    doc.save("historico_chat.pdf");
+    toast.success("PDF exportado com sucesso!");
   };
 
   const toggleTheme = () => setDarkMode((prev) => !prev);
@@ -175,7 +192,9 @@ const ChatApp = () => {
           <img src={MagoLogo} alt="Logo Mago" className="logo-img" />
           <h1>Dr. Botica responde</h1>
         </div>
-        <button onClick={toggleTheme} className="btn-dark">{darkMode ? <FaSun /> : <FaMoon />}</button>
+        <button onClick={toggleTheme} className="btn-dark">
+          {darkMode ? <FaSun /> : <FaMoon />}
+        </button>
       </div>
 
       <div className="messages">
@@ -186,10 +205,18 @@ const ChatApp = () => {
               {msg.content}
               {msg.role === "assistant" && (
                 <div className="msg-actions">
-                  <button onClick={() => speakMessage(msg.content)}><FaVolumeUp /></button>
-                  <button onClick={pauseAudio}><FaPause /></button>
-                  <button onClick={() => downloadMessage(msg.content)}><FaDownload /></button>
-                  <button onClick={() => copyMessage(msg.content)}><FaCopy /></button>
+                  <button onClick={() => speakMessage(msg.content)}>
+                    <FaVolumeUp />
+                  </button>
+                  <button onClick={pauseAudio}>
+                    <FaPause />
+                  </button>
+                  <button onClick={() => downloadMessage(msg.content)}>
+                    <FaDownload />
+                  </button>
+                  <button onClick={() => copyMessage(msg.content)}>
+                    <FaCopy />
+                  </button>
                 </div>
               )}
             </div>
@@ -205,14 +232,22 @@ const ChatApp = () => {
           onChange={(e) => setInput(e.target.value)}
           placeholder="Digite sua mensagem ou use voz/upload..."
         />
-        <button onClick={sendMessage}><FaPaperPlane /></button>
-        <button onClick={startListening}><FaMicrophone /></button>
-        <button onClick={clearInput}><FaEraser /></button>
+        <button onClick={sendMessage}>
+          <FaPaperPlane />
+        </button>
+        <button onClick={startListening}>
+          <FaMicrophone />
+        </button>
+        <button onClick={clearInput}>
+          <FaEraser />
+        </button>
         <label className="upload-btn">
           <FaUpload />
           <input type="file" onChange={handleFileUpload} hidden />
         </label>
-        <button onClick={exportHistory}><FaDownload /></button>
+        <button onClick={exportHistoryAsPDF}>
+          <FaDownload />
+        </button>
       </div>
     </div>
   );
