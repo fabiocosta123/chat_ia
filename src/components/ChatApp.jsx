@@ -7,13 +7,14 @@ import {
   FaSun,
   FaDownload,
   FaMicrophone,
-  FaUpload, 
-  FaVolumeUp
+  FaUpload,
+  FaVolumeUp,
+  FaPause,
 } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../styles/chat.css";
-import MagoLogo from '../assets/img/magoSemFundo.png'
+import MagoLogo from "../assets/img/magoSemFundo.png";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
@@ -28,8 +29,19 @@ const ChatApp = () => {
   const [darkMode, setDarkMode] = useState(false);
   const [listening, setListening] = useState(false);
   const recognitionRef = useRef(null);
+  const messagesEndRef = useRef(null);
 
-  //Configuração da voz
+  // Scroll automático
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  // Salva histórico
+  useEffect(() => {
+    localStorage.setItem("chatHistory", JSON.stringify(messages));
+  }, [messages]);
+
+  // Reconhecimento de voz
   useEffect(() => {
     if ("webkitSpeechRecognition" in window) {
       const recognition = new window.webkitSpeechRecognition();
@@ -48,34 +60,19 @@ const ChatApp = () => {
         setListening(false);
       };
 
-      recognition.onend = () => {       
-        setListening(false);
-      }
-
+      recognition.onend = () => setListening(false);
       recognitionRef.current = recognition;
     }
   }, []);
 
   const startListening = () => {
-  if (listening) {
-    toast.info("Já estou escutando...");
-    return;
-  }
-
-  if (recognitionRef.current) {
-    recognitionRef.current.start();
+    if (listening) return toast.info("Já estou escutando...");
+    recognitionRef.current?.start() ?? toast.error("Reconhecimento não suportado.");
     setListening(true);
-  } else {
-    toast.error("Reconhecimento de voz não suportado.");
-  }
   };
 
-
   const sendMessage = async () => {
-    if (!input.trim()) {
-      toast.error("O campo está vazio!");
-      return;
-    }
+    if (!input.trim()) return toast.error("O campo está vazio!");
 
     const userMessage = { role: "user", content: input };
     setMessages((prev) => [...prev, userMessage]);
@@ -86,7 +83,6 @@ const ChatApp = () => {
       const result = await model.generateContent(input);
       const response = await result.response;
       const text = response.text();
-
       const botMessage = { role: "assistant", content: text };
       setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
@@ -98,54 +94,36 @@ const ChatApp = () => {
       setListening(false);
     }
   };
- 
-  // copia resposta
-  const copyLastMessage = () => {
-    const last = messages[messages.length - 1];
-    if (last?.role === "assistant") {
-      navigator.clipboard.writeText(last.content);
-      toast.success("Resposta copiada!");
-    } else {
-      toast.info("Nada para copiar ainda!");
-    }
+
+  const speakMessage = (text) => {
+    speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "pt-BR";
+    speechSynthesis.speak(utterance);
+    toast.info("Lendo resposta em voz...");
   };
- 
 
-  // limpa campo de input
-  const clearInput = () => {
-    setInput("");
-    toast.info("Campo de texto limpo!");
+  const pauseAudio = () => {
+    speechSynthesis.pause();
+    toast.info("Áudio pausado.");
   };
-  
 
-  // exporta conversa
-  const exportHistory = () => {
-    if (messages.length === 0) {
-      toast.info("Nenhuma mensagem para exportar.");
-      return;
-    }
-
-    const content = messages
-      .map((msg) => `${msg.role === "user" ? "Você" : "Copilot"}: ${msg.content}`)
-      .join("\n\n");
-
-    const blob = new Blob([content], { type: "text/plain" });
+  const downloadMessage = (text) => {
+    const blob = new Blob([text], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
-
     const link = document.createElement("a");
     link.href = url;
-    link.download = "historico_chat.txt";
+    link.download = "resposta.txt";
     link.click();
-
     URL.revokeObjectURL(url);
-    toast.success("Histórico exportado!");
+    toast.success("Resposta baixada!");
   };
 
-  const toggleTheme = () => {
-    setDarkMode((prev) => !prev);
+  const copyMessage = (text) => {
+    navigator.clipboard.writeText(text);
+    toast.success("Resposta copiada!");
   };
 
-  // Upload de arquivos
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -154,9 +132,9 @@ const ChatApp = () => {
 
     if (file.type.startsWith("text/") || file.type === "application/pdf") {
       const reader = new FileReader();
-      reader.onload = async () => {
+      reader.onload = () => {
         const content = reader.result;
-        setInput(content.slice(0, 1000)); // limita para evitar excesso
+        setInput(content.slice(0, 1000));
         toast.success("Texto do arquivo carregado no campo.");
       };
       reader.readAsText(file);
@@ -165,53 +143,56 @@ const ChatApp = () => {
     }
   };
 
-  // saida de audio
-  const speakLastMessage = () => {
-  const last = messages[messages.length - 1];
+  const clearInput = () => {
+    setInput("");
+    toast.info("Campo de texto limpo!");
+  };
 
-  // Interrompe qualquer fala anterior
-  speechSynthesis.cancel();
-  if (last?.role === "assistant") {
-    const utterance = new SpeechSynthesisUtterance(last.content);
-    utterance.lang = "pt-BR"; // ou "en-US" se for inglês
-    speechSynthesis.speak(utterance);
-    toast.info("Lendo resposta em voz...");
-  } else {
-    toast.info("Nada para ler ainda!");
-  }
-};
+  const exportHistory = () => {
+    if (messages.length === 0) return toast.info("Nenhuma mensagem para exportar.");
 
+    const content = messages
+      .map((msg) => `${msg.role === "user" ? "Você" : "Copilot"}: ${msg.content}`)
+      .join("\n\n");
 
-  useEffect(() => {
-    localStorage.setItem("chatHistory", JSON.stringify(messages));
-  }, [messages]);
+    const blob = new Blob([content], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "historico_chat.txt";
+    link.click();
+    URL.revokeObjectURL(url);
+    toast.success("Histórico exportado!");
+  };
 
-  // scrool automatico
-  const messagesEndRef = useRef(null);
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
-
+  const toggleTheme = () => setDarkMode((prev) => !prev);
 
   return (
     <div className={`chat-container ${darkMode ? "dark" : ""}`}>
       <ToastContainer />
       <div className="header">
         <div className="logo-title">
-          <img src={MagoLogo} alt="Logo Mago" className="logo-img"/>
+          <img src={MagoLogo} alt="Logo Mago" className="logo-img" />
           <h1>Dr. Botica responde</h1>
         </div>
-        <button onClick={toggleTheme} className="btn-dark">
-          {darkMode ? <FaSun /> : <FaMoon />}
-        </button>
+        <button onClick={toggleTheme}>{darkMode ? <FaSun /> : <FaMoon />}</button>
       </div>
 
       <div className="messages">
         {messages.map((msg, i) => (
           <div key={i} className={`message ${msg.role}`}>
             <div className="avatar">{msg.role === "user" ? "🧑" : "🤖"}</div>
-            <div className="text">{msg.content}</div>
+            <div className="text">
+              {msg.content}
+              {msg.role === "assistant" && (
+                <div className="msg-actions">
+                  <button onClick={() => speakMessage(msg.content)}><FaVolumeUp /></button>
+                  <button onClick={pauseAudio}><FaPause /></button>
+                  <button onClick={() => downloadMessage(msg.content)}><FaDownload /></button>
+                  <button onClick={() => copyMessage(msg.content)}><FaCopy /></button>
+                </div>
+              )}
+            </div>
           </div>
         ))}
         {loading && <div className="thinking">🤔 Pensando...</div>}
@@ -225,16 +206,13 @@ const ChatApp = () => {
           placeholder="Digite sua mensagem ou use voz/upload..."
         />
         <button onClick={sendMessage}><FaPaperPlane /></button>
-        <button onClick={copyLastMessage}><FaCopy /></button>
-        <button onClick={clearInput}><FaEraser /></button>
-        <button onClick={exportHistory}><FaDownload /></button>
         <button onClick={startListening}><FaMicrophone /></button>
-        <button onClick={speakLastMessage}><FaVolumeUp /></button>
-
+        <button onClick={clearInput}><FaEraser /></button>
         <label className="upload-btn">
           <FaUpload />
           <input type="file" onChange={handleFileUpload} hidden />
         </label>
+        <button onClick={exportHistory}><FaDownload /></button>
       </div>
     </div>
   );

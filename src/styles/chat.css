@@ -1,7 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
 
-
- /*Variáveis padrão (modo claro) */
+/* Variáveis padrão (modo claro) */
 :root {
   --bg: #ffffff;
   --text: #333333;
@@ -12,7 +11,7 @@
   --primary-hover: #0056b3;
 }
 
-/*Modo escuro*/
+/* Modo escuro */
 .chat-container.dark {
   --bg: #1e1e1e;
   --text: #f0f0f0;
@@ -23,7 +22,7 @@
   --primary-hover: #2c5282;
 }
 
-/*Estilos gerais*/
+/* Estilos gerais */
 .chat-container {
   max-width: 100%;
   width: 90%;
@@ -70,6 +69,9 @@ h1 {
 }
 
 .message {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
   margin: 0.5rem 0;
   padding: 0.75rem;
   border-radius: 8px;
@@ -88,6 +90,40 @@ h1 {
   text-align: left;
 }
 
+.avatar {
+  font-size: 1.2rem;
+}
+
+.text {
+  flex: 1;
+}
+
+/* Ações por mensagem */
+.msg-actions {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.msg-actions button {
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  padding: 0.4rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.msg-actions button:hover {
+  background-color: var(--primary-hover);
+}
+
+/* Pensando */
 .thinking {
   font-style: italic;
   color: #888;
@@ -95,7 +131,7 @@ h1 {
   margin-top: 0.5rem;
 }
 
-/*Controles */
+/* Controles */
 .controls {
   display: flex;
   flex-wrap: wrap;
@@ -108,7 +144,6 @@ h1 {
 input {
   flex: 1 1 30%;
   padding: 0.6rem;
-  border: 1px solid #ccc;
   border-radius: 8px;
   font-size: 1rem;
   min-width: 250px;
@@ -117,8 +152,9 @@ input {
   border: 1px solid #555;
 }
 
-/*Botões */
-button {
+/* Botões */
+button,
+.upload-btn {
   background-color: var(--primary);
   color: white;
   border: none;
@@ -130,22 +166,6 @@ button {
   align-items: center;
   justify-content: center;
   min-width: 40px;
-  
-}
-
-.upload-btn{
-  background-color: var(--primary);
-  color: white;
-  border: none;
-  padding: 0.6rem;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 21px;
-  height: 13px;
 }
 
 button:hover,
@@ -171,8 +191,7 @@ button:has(svg.fa-volume-up) {
   background-color: #3c8c3c;
 }
 
-
-/* Responsividade  */
+/* Responsividade */
 @media (max-width: 768px) {
   h1 {
     font-size: 1.5rem;
@@ -184,29 +203,20 @@ button:has(svg.fa-volume-up) {
   }
 
   input {
-    width: 93%;
+    width: 100%;
   }
 
   button,
   .upload-btn {
-    width: 94%;
+    width: 100%;
   }
 
   .messages {
     max-height: 40vh;
   }
 
-  .controls {
+  .msg-actions {
     flex-direction: column;
-  }
-
-
-  button {
-    width: 100%;
-  }
-
-  .btn-dark{
-    width: 10%;
+    align-items: stretch;
   }
 }
-
