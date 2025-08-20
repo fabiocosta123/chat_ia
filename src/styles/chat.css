@@ -118,8 +118,7 @@ input {
 }
 
 /*Botões */
-button,
-.upload-btn {
+button {
   background-color: var(--primary);
   color: white;
   border: none;
@@ -132,6 +131,21 @@ button,
   justify-content: center;
   min-width: 40px;
   
+}
+
+.upload-btn{
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  padding: 0.6rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 21px;
+  height: 13px;
 }
 
 button:hover,
@@ -157,6 +171,7 @@ button:has(svg.fa-volume-up) {
   background-color: #3c8c3c;
 }
 
+
 /* Responsividade  */
 @media (max-width: 768px) {
   h1 {
@@ -169,12 +184,12 @@ button:has(svg.fa-volume-up) {
   }
 
   input {
-    width: 95%;
+    width: 93%;
   }
 
   button,
   .upload-btn {
-    width: 95%;
+    width: 94%;
   }
 
   .messages {
