@@ -61,14 +61,6 @@ h1 {
   height: auto;
 }
 
-
-h1 {
-  text-align: center;
-  font-size: 2rem;
-  margin-bottom: 1rem;
-  color: var(--text);
-}
-
 /* Mensagens */
 .messages {
   max-height: 50vh;
@@ -110,15 +102,16 @@ h1 {
   gap: 0.5rem;
   align-items: center;
   justify-content: center;
+  margin-bottom: 1rem;
 }
 
 input {
-  flex: 1 1 100%;
+  flex: 1 1 30%;
   padding: 0.6rem;
   border: 1px solid #ccc;
   border-radius: 8px;
   font-size: 1rem;
-  min-width: 200px;
+  min-width: 250px;
   background-color: var(--card);
   color: var(--text);
   border: 1px solid #555;
@@ -138,6 +131,7 @@ button,
   align-items: center;
   justify-content: center;
   min-width: 40px;
+  
 }
 
 button:hover,
@@ -175,16 +169,29 @@ button:has(svg.fa-volume-up) {
   }
 
   input {
-    width: 100%;
+    width: 95%;
   }
 
   button,
   .upload-btn {
-    width: 100%;
+    width: 95%;
   }
 
   .messages {
     max-height: 40vh;
+  }
+
+  .controls {
+    flex-direction: column;
+  }
+
+
+  button {
+    width: 100%;
+  }
+
+  .btn-dark{
+    width: 10%;
   }
 }
 

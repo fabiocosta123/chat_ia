@@ -202,7 +202,7 @@ const ChatApp = () => {
           <img src={MagoLogo} alt="Logo Mago" className="logo-img"/>
           <h1>Dr. Botica responde</h1>
         </div>
-        <button onClick={toggleTheme}>
+        <button onClick={toggleTheme} className="btn-dark">
           {darkMode ? <FaSun /> : <FaMoon />}
         </button>
       </div>
