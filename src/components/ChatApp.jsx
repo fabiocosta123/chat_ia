@@ -84,7 +84,8 @@ const ChatApp = () => {
     setLoading(true);
 
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+      console.log("API Key carregada?", !!import.meta.env.VITE_GEMINI_API_KEY); 
       const result = await model.generateContent(input);
       const response = await result.response;
       const text = response.text();
@@ -92,6 +93,13 @@ const ChatApp = () => {
       setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
       console.error("Erro Gemini:", error);
+      if (error.message.includes("404")) {
+        toast.error(
+          "Modelo de IA temporariamente indisponível. Tente novamente em instantes."
+        );
+      } else {
+        toast.error("Erro ao buscar resposta!");
+      }
       toast.error("Erro ao buscar resposta!");
     } finally {
       setLoading(false);
